@@ -1,0 +1,91 @@
+# Default values for fabric-logger.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: splunkdlt/fabric-logger
+  tag: release-1.2.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+secrets:
+  peer:
+    # If create: is set to true, then secrets will be auto created based on a cryptogen MSP directory structure.
+    create: false
+    # Secrets can be specified here to overwrite the secret creation setting above.
+    cert: hlf-peer--buttercup--admin-msp
+    #itemKey can be defined if there is a secret with multiple items stored inside.
+    certItem: cert.pem
+    key: hlf-peer--buttercup--admin-msp
+    keyItem: key.pem
+    tls: hlf-peer--buttercup--admin-msp
+    tlsItem: tlscacert.pem
+    clientCert: hlf-peer--buttercup--peer0-tls
+    clientCertItem: server.crt
+    clientKey: hlf-peer--buttercup--peer0-tls
+    clientKeyItem: server.key
+
+peer:
+  mspName: ButtercupMSP
+  peerName: peer0
+  username: Admin   # If secrets.peer.create = true, this is the user that will be used in the crytpogen directory.
+  orgDomain: example.com
+  peerScheme: grpcs  # grpc or grpcs
+  peerAddress: peer0.buttercup.example.com
+  peerPort: 7051
+  channels:
+    # A list of channel names that this peer connects to:
+    - buttercup-go
+    - haunt
+    - crisis-uprising
+    - chaos-oath
+    - rage-trilogy
+    - containment-apocalyse
+
+loggingLocation: splunk
+splunk:
+  hec:
+    token: 12345678-ABCD-EFGH-IJKL-123456789012
+    port: 8088
+    host: splunk-splunk-kube
+  index: hyperledger_logs
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: fabric-logger.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

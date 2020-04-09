@@ -1,0 +1,148 @@
+# https://fabric-sdk-node.github.io/release-1.4/tutorial-network-config.html
+name: "Network"
+version: "1.0"
+
+tlsEnabled: true
+useActualDomains: true
+
+network:
+  # used by init script to create genesis block and by peer-org-flow to parse consortiums
+  genesisProfile: SampleMultiNodeEtcdRaft
+  # used by init script to create genesis block 
+  systemChannelID: byfn-sys-channel
+
+  channels:
+    buttercup-go:
+      orderers:
+        - orderer.example.com
+      peers:
+        peer0.buttercup.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+        peer0.popstar.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+    haunt:
+      orderers:
+        - orderer.example.com
+      peers:
+        peer0.buttercup.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+        peer0.popstar.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+    crisis-uprising:
+      orderers:
+        - orderer.example.com
+      peers:
+        peer0.buttercup.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+        peer0.popstar.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+    containment-apocalyse:
+      orderers:
+        - orderer.example.com
+      peers:
+        peer0.buttercup.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+        peer0.popstar.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+    rage-trilogy:
+      orderers:
+        - orderer.example.com
+      peers:
+        peer0.buttercup.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+        peer0.popstar.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+    chaos-oath:
+      orderers:
+        - orderer.example.com
+      peers:
+        peer0.buttercup.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+        peer0.popstar.example.com:
+          endorsingPeer: true
+          chaincodeQuery: true
+          ledgerQuery: true
+          eventSource: true
+
+  organizations:
+    Pony:
+      mspid: ButtercupMSP
+      peers:
+        - peer0.buttercup.example.com
+
+    Toby:
+      mspid: PopstarMSP
+      peers:
+        - peer0.popstar.example.com
+
+  orderers:
+    orderer.example.com:
+      url: grpcs://orderer.example.com:7050
+      grpcOptions:
+        ssl-target-name-override: orderer.example.com
+        grpc-max-send-message-length: 4194304
+      tlsCACerts:
+        path: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+  peers:
+    peer0.buttercup.example.com:
+      url: grpcs://peer0.buttercup.example.com:7051
+      grpcOptions:
+        ssl-target-name-override: peer0.buttercup.example.com
+        grpc.keepalive_time_ms: 600000
+      tlsCACerts:
+        path: crypto-config/peerOrganizations/buttercup.example.com/peers/peer0.buttercup.example.com/msp/tlscacerts/tlsca.buttercup.example.com-cert.pem
+
+    peer0.popstar.example.com:
+      url: grpcs://peer0.popstar.example.com:8051
+      grpcOptions:
+        ssl-target-name-override: peer0.popstar.example.com
+      tlsCACerts:
+        path: crypto-config/peerOrganizations/popstar.example.com/peers/peer0.popstar.example.com/msp/tlscacerts/tlsca.popstar.example.com-cert.pem
+
+  chaincodes:
+    - name: high-throughput
+      # if defined, this will override the global chaincode.version value
+      version: "1.0" 
+      # chaincode will be installed to all peers in these organizations
+      orgs: [Buttercup, Popstar]
+      # at which channels are we instantiating/upgrading chaincode?
+      channels:
+      - name: buttercup-go
+        # chaincode will be instantiated/upgraded using the first peer in the first organization
+        # chaincode will be invoked on all peers in these organizations
+        orgs: [Buttercup, Popstar]
+        policy: OR('ButterCupMSP.member','PopstarMSP.member')        
