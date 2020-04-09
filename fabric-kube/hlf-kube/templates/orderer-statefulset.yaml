@@ -235,11 +235,20 @@ spec:
           value: {{ $.Values.orderer.operations.tls.enabled | quote }}
         {{- end }}
 
-        # Metrics configuration with Prometheus
-        {{-  if $.Values.orderer.metrics.enabled }}
+        {{- if $.Values.metrics.orderer.enabled }}
         - name: ORDERER_METRICS_PROVIDER
-          value: {{ $.Values.orderer.metrics.provider }}
-        {{ end }}  
+          value: {{ $.Values.metrics.orderer.provider }}
+        {{- if eq $.Values.metrics.orderer.provider "statsd" }}
+        - name: ORDERER_METRICS_STATSD_NETWORK
+          value: {{ $.Values.metrics.orderer.statsd.network }}
+        - name: ORDERER_METRICS_STATSD_ADDRESS
+          value: {{ $.Values.metrics.orderer.statsd.address }}
+        - name: ORDERER_METRICS_STATSD_PREFIX
+          value: {{ $org.Name | lower }}--{{ $host.Hostname | lower }}
+        - name: ORDERER_METRICS_STATSD_WRITE_INTERVAL
+          value: {{ $.Values.metrics.orderer.statsd.writeInterval }}
+        {{- end }} # End statsD section
+        {{- end }}
 
         - name: HFC_LOGGING
           value: '{"info":"console"}'

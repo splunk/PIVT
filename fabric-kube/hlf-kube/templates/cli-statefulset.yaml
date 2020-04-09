@@ -1,0 +1,201 @@
+{{- if .Values.peer.launchPods }}
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hlf-cli
+spec:
+  volumes:
+  - name: hlf-scripts
+    configMap:
+      name: hlf-scripts
+      defaultMode: 0777 # make scripts executable
+  - name: hlf-configtx
+    secret:
+      secretName: hlf-configtx.yaml
+      items:
+        - key: configtx.yaml
+          path: configtx.yaml
+        - key: core.yaml
+          path: core.yaml
+  - name: dockersocket
+    hostPath:
+      path: /var/run/docker.sock
+      type: Socket
+
+{{- range $i, $org := .Values.PeerOrgs }}
+  - name: hlf-peer-{{ $org.Name | lower }}-msp
+    secret:
+      secretName: hlf-peer--{{ $org.Name | lower }}--msp
+      items:
+      - key: config.yaml
+        path: config.yaml
+      - key: admincert.pem
+        path: admincerts/Admin@{{ $org.Domain}}-cert.pem
+      - key: cacert.pem
+        path: cacerts/ca.{{ $org.Domain}}-cert.pem
+      - key: tlscacert.pem
+        path: tlscacerts/tlsca.{{ $org.Domain}}-cert.pem
+{{- end }} {{- /* PeerOrgs */ -}}{{""}}
+
+{{- range $i, $org := .Values.PeerOrgs }}
+  - name: hlf-peer-{{ $org.Name | lower }}-admin-msp
+    secret:
+      secretName: hlf-peer--{{ $org.Name | lower }}--admin-msp
+      items:
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key.pem
+        path: keystore/key.pem
+      - key: cacert.pem
+        path: cacerts/cert.pem
+      - key: tlscacert.pem
+        path: tlscacerts/cert.pem
+      - key: admincert.pem
+        path: admincerts/cert.pem
+
+{{- range $peerIndex := until ($org.Template.Count | int) }}
+{{- $peer := (printf "peer%s" ($peerIndex | toString)) }}
+  - name: peer-{{ $org.Name | lower }}-{{ $peer | lower }}-tls
+    secret:
+      secretName: hlf-peer--{{ $org.Name | lower }}--{{ $peer | lower }}-tls
+{{ end }} {{- /* org.Specs */ -}}
+{{ end }} {{- /* OrdererOrgs */ -}} {{ "" }}
+
+{{- range $i, $org := .Values.OrdererOrgs }}
+  - name: orderer-{{ $org.Name | lower }}-admin-msp
+    secret:
+      secretName: hlf-orderer--{{ $org.Name | lower }}--admin-msp
+      items:
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key.pem
+        path: keystore/key.pem
+      - key: cacert.pem
+        path: cacerts/cert.pem
+      - key: tlscacert.pem
+        path: tlscacerts/cert.pem
+      - key: admincert.pem
+        path: admincerts/cert.pem
+
+{{- range $i, $host := $org.Specs }}
+  - name: orderer-{{ $org.Name | lower }}-{{ $host.Hostname | lower }}-tls
+    secret:
+      secretName: hlf-orderer--{{ $org.Name | lower }}--{{ $host.Hostname | lower }}-tls
+{{ end }} {{- /* org.Specs */ -}}
+{{ end }} {{- /* OrdererOrgs */ -}} {{ "" }}
+
+{{- range $i, $org := .Values.OrdererOrgs }}
+  - name: orderer-{{ $org.Name | lower }}-msp
+    secret:
+      secretName: hlf-orderer--{{ $org.Name | lower }}--orderer-msp
+      items:
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key.pem
+        path: keystore/key.pem
+      - key: cacert.pem
+        path: cacerts/cert.pem
+      - key: admincert.pem
+        path: admincerts/cert.pem
+{{ end }} {{- /* OrdererOrgs */ -}} {{ "" }}    
+
+
+
+  # chaincodes
+  {{- range $i, $chaincode := $.Values.network.chaincodes }}    
+  - name: chaincode-{{ $chaincode.name | lower }}
+    configMap:
+      name: hlf-chaincode--{{ $chaincode.name | lower }}
+  {{- end }}
+
+  {{- if $.Values.hostAliases }}
+  hostAliases:
+  {{- range $i, $alias := $.Values.hostAliases }}
+  - ip: {{ $alias.ip }}
+    hostnames: {{ $alias.hostnames }}
+  {{- end }}
+  {{- end }}{{""}}
+
+  containers:
+  
+  # Peer container
+  - name: cli
+    image: hyperledger/fabric-tools:1.4.2
+    command:
+      - bash
+      - -c
+      - while true; do sleep 30; done;
+
+    volumeMounts:
+    - mountPath: /hlf-scripts
+      name: hlf-scripts
+    - mountPath: /hlf_config/
+      name: hlf-configtx
+    - mountPath: /host/var/run/docker.sock
+      name: dockersocket
+
+    {{- range $i, $org := .Values.PeerOrgs }}
+    - mountPath: /hlf_config/crypto-config/peerOrganizations/{{ $org.Domain | lower }}/msp
+      name: hlf-peer-{{ $org.Name | lower }}-msp
+    {{- end }} {{- /* PeerOrgs */ -}}{{""}}
+
+    {{- range $i, $org := .Values.PeerOrgs }}
+    - mountPath: /hlf_config/crypto-config/peerOrganizations/{{ $org.Domain | lower }}/users/Admin@{{ $org.Domain | lower}}/msp
+      name: hlf-peer-{{ $org.Name | lower }}-admin-msp
+    {{- end }} {{- /* OrdererOrgs */ -}}{{""}}   
+    
+    {{- range $i, $org := .Values.PeerOrgs }}
+    {{- range $peerIndex := until ($org.Template.Count | int) }}
+    {{- $peer := (printf "peer%s" ($peerIndex | toString)) }}
+    - mountPath: /hlf_config/crypto-config/peerOrganizations/{{ $org.Domain | lower }}/peers/{{ $peer }}.{{ $org.Domain | lower }}/tls
+      name: peer-{{ $org.Name | lower }}-{{ $peer | lower }}-tls
+    {{- end }}
+    {{- end }} {{- /* PeerOrgs */ -}}{{""}}
+          
+    {{- range $i, $org := .Values.OrdererOrgs }}
+    - mountPath: /hlf_config/crypto-config/ordererOrganizations/{{ $org.Domain | lower }}/users/Admin@{{ $org.Domain | lower}}/msp
+      name: orderer-{{ $org.Name | lower }}-admin-msp
+    {{- end }} {{- /* OrdererOrgs */ -}}{{""}}
+
+    {{- range $i, $org := .Values.OrdererOrgs }}
+    - mountPath: /hlf_config/crypto-config/ordererOrganizations/{{ $org.Domain | lower }}/msp
+      name: orderer-{{ $org.Name | lower }}-msp
+    {{- end }} {{- /* OrdererOrgs */ -}}{{""}}
+
+    {{- range $i, $chaincode := $.Values.network.chaincodes }}    
+    - mountPath: /chaincode/{{ $chaincode.name }}
+      name: chaincode-{{ $chaincode.name | lower }}
+    {{- end }}
+
+
+    env:
+    - name: CORE_PEER_ID
+      value: cli
+    - name: CORE_PEER_ADDRESS
+      value: peer0.buttercup.example.com:7051
+    - name: CORE_PEER_LOCALMSPID
+      value: ButtercupMSP
+    - name: CORE_VM_ENDPOINT
+      value: unix:///host/var/run/docker.sock
+    - name: FABRIC_LOGGING_SPEC
+      value: {{ $.Values.peer.logLevel }}
+    - name: CORE_PEER_TLS_ENABLED
+      value: {{ $.Values.tlsEnabled | quote }}
+    - name: CORE_PEER_TLS_CERT_FILE
+      value: /hlf_config/crypto-config/peerOrganizations/buttercup.example.com/peers/peer0.buttercup.example.com/tls/server.crt
+    - name: CORE_PEER_TLS_KEY_FILE
+      value: /hlf_config/crypto-config/peerOrganizations/buttercup.example.com/peers/peer0.buttercup.example.com/tls/server.key
+    - name: CORE_PEER_TLS_ROOTCERT_FILE
+      value: /hlf_config/crypto-config/peerOrganizations/buttercup.example.com/peers/peer0.buttercup.example.com/tls/ca.crt
+                    
+    - name: HFC_LOGGING
+      value: '{"info":"console"}'
+    - name: GRPC_VERBOSITY
+      value: DEBUG
+    - name: GRPC_TRACE
+      value:  all
+    
+
+---
+{{- end }} {{- /* if launchPods */ -}}

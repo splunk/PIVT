@@ -192,7 +192,25 @@ hlf-kafka:
       enabled: false
       storageClass: default
       size: 16Gi
-    
-    
-      
 
+# metrics settings
+metrics:
+  core:
+    # enable core metrics (peer)
+    enabled: true
+    # provider can also be set to prometheus
+    provider: statsd
+    statsd:
+      network: tcp  # tcp or udp
+      address: splunk-splunk-kube:8125
+      writeInterval: 10s
+
+  orderer:
+    # enable orderer metrics
+    enabled: true
+    # provider can also be set to prometheus
+    provider: statsd
+    statsd:
+      network: tcp  # tcp or udp
+      address: splunk-splunk-kube:8125
+      writeInterval: 10s

@@ -1,0 +1,91 @@
+global:
+  logLevel: info 
+  splunk:
+    hec:
+      port: 8088
+      protocol: https
+      insecureSSL: true
+      host: splunk-splunk-kube
+      token: 12345678-ABCD-EFGH-IJKL-123456789012
+
+#local config for logging chart
+splunk-kubernetes-logging:
+  # MicroK8s only
+  containers:
+    logFormatType: cri
+    logFormat: "%Y-%m-%dT%H:%M:%S.%N%:z"
+
+  splunk:
+    hec:
+      indexName: hyperledger_logs
+  # logs:
+  #   hlf:
+  #     from:
+  #       pod: "hlf-*"
+  #       container: "*"
+  #     multiline: 
+  #       firstline: /^(\x1b\[[0-9;]*m)?\d{4}/
+  
+
+# #local config for metrics chart
+splunk-kubernetes-metrics:
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: splunk-kubernetes-metrics
+  buffer:
+    chunk_limit_records: 10000
+  aggregatorBuffer:
+    chunk_limit_records: 10000
+  splunk:
+    hec:
+      indexName: hyperledger_metrics
+
+#local config for objects chart      
+splunk-kubernetes-objects:
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: splunk-kubernetes-objects
+  kubernetes:
+    insecureSSL: true
+  objects:
+    core:
+      v1:
+        - name: pods
+          mode: pull
+          interval: 60m
+        - name: namespaces
+          mode: pull
+          interval: 60m
+        - name: nodes
+          mode: pull
+          interval: 60m
+        - name: services
+          mode: pull
+          interval: 60m
+        - name: config_maps
+          mode: pull
+          interval: 60m
+        - name: events
+          mode: pull
+          interval: 60m
+    apps:
+      v1:
+        - name: deployments
+          mode: pull
+          interval: 60m
+        - name: daemon_sets
+          mode: pull
+          interval: 60m
+        - name: replica_sets
+          mode: pull
+          interval: 60m
+        - name: stateful_sets
+          mode: pull
+          interval: 60m
+  splunk:
+    hec:
+      indexName: cluster_objects

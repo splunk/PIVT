@@ -1,0 +1,2 @@
+helm install ./ --name splunk --namespace splunk -f splunk.yaml
+helm install --name splunk-connect-k8s --namespace splunk -f splunk-connect.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.2.0/splunk-connect-for-kubernetes-1.2.0.tgz

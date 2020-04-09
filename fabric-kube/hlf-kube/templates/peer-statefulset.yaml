@@ -324,19 +324,27 @@ spec:
           value:  all
         # - name: GODEBUG
         #   value: http2debug=2
-        
+        {{- if $.Values.metrics.core.enabled }}
+        - name: CORE_METRICS_PROVIDER
+          value: {{ $.Values.metrics.core.provider }}
+        {{- if eq $.Values.metrics.core.provider "statsd" }}
+        - name: CORE_METRICS_STATSD_NETWORK
+          value: {{ $.Values.metrics.core.statsd.network }}
+        - name: CORE_METRICS_STATSD_ADDRESS
+          value: {{ $.Values.metrics.core.statsd.address }}
+        - name: CORE_METRICS_STATSD_PREFIX
+          value: {{ $org.Name | lower }}--{{ $peer | lower }}
+        - name: CORE_METRICS_STATSD_WRITE_INTERVAL
+          value: {{ $.Values.metrics.core.statsd.writeInterval }}
+        {{- end }} # End statsD section
+        {{- end }}
+
         # Operations service
         {{- if $.Values.peer.operations.enabled }}
         - name: CORE_OPERATIONS_LISTENADDRESS
           value: {{ $.Values.peer.operations.listenAddress }}
         - name: CORE_OPERATIONS_TLS_ENABLED
           value: {{ $.Values.peer.operations.tls.enabled | quote }}
-        {{- end }}
-
-        # metrics with Prometheus
-        {{- if $.Values.peer.metrics.enabled }}
-        - name: CORE_METRICS_PROVIDER
-          value: {{ $.Values.peer.metrics.provider }}
         {{- end }}
 
       # CouchDB container
