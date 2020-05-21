@@ -18,22 +18,20 @@ spec:
   volumeClaimTemplates:
   {{- if $.Values.peer.persistence.enabled }}
   - metadata:
-      name: peer-disk
+      name: peer-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
     spec:
       accessModes:
         - ReadWriteOnce
-      storageClassName: {{ $.Values.persistence.storageClass }}
       resources:
         requests:
           storage: {{ $.Values.peer.persistence.size }}
   {{- end }}
   {{- if $.Values.couchdb.persistence.enabled }}
   - metadata:
-      name: couchdb-disk
+      name: couchdb-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
     spec:
       accessModes:
         - ReadWriteOnce
-      storageClassName: {{ $.Values.persistence.storageClass }}
       resources:
         requests:
           storage: {{ $.Values.couchdb.persistence.size }}
@@ -47,11 +45,11 @@ spec:
     spec:
       volumes:
       {{- if not $.Values.peer.persistence.enabled }}
-      - name: peer-disk
+      - name: peer-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         emptyDir: {}
       {{- end }}
       {{- if not $.Values.couchdb.persistence.enabled }}
-      - name: couchdb-disk
+      - name: couchdb-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         emptyDir: {}
       {{- end }}
       - name: rsync-disk
@@ -135,9 +133,9 @@ spec:
 
         volumeMounts:
         - mountPath: /var/hyperledger/production/
-          name: peer-disk
+          name: peer-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         - mountPath: /opt/couchdb/data/
-          name: couchdb-disk
+          name: couchdb-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
 
         env:
         - name: ALLOW
@@ -180,9 +178,9 @@ spec:
                                
         volumeMounts:
         - mountPath: /var/hyperledger/production/
-          name: peer-disk
+          name: peer-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         - mountPath: /opt/couchdb/data/
-          name: couchdb-disk
+          name: couchdb-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         - mountPath: /data/
           name: rsync-disk
 
@@ -239,7 +237,7 @@ spec:
 
         volumeMounts:
         - mountPath: /var/hyperledger/production/
-          name: peer-disk
+          name: peer-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         - mountPath: /host/var/run/docker.sock
           name: dockersocket
         - mountPath: /etc/hyperledger/fabric/tls/
@@ -353,7 +351,7 @@ spec:
 
         volumeMounts:
         - mountPath: /opt/couchdb/data/
-          name: couchdb-disk
+          name: couchdb-disk-{{ $org.Name | lower }}--{{ $peer | lower }}
         
         env:
         - name: COUCHDB_USER
