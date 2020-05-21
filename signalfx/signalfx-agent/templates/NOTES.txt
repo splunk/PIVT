@@ -1,0 +1,9 @@
+The SignalFx agent is being deployed in your Kubernetes cluster.  You should
+see metrics flowing once the agent image is downloaded and started (this may
+take a few minutes since it has to download the agent container image).
+
+Assuming you are logged into SignalFx in your browser, visit
+
+https://app.{{ .Values.signalFxRealm | default "us0" }}.signalfx.com/#/navigator/kubernetes%20pods/kubernetes%20pods
+
+to see all of the pods in your cluster.

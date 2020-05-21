@@ -1,0 +1,231 @@
+# Version of the signalfx-agent to deploy.  This will be the default for the
+# docker image tag if not overridden with imageTag
+agentVersion: 5.1.3
+
+# Whether to send data to SignalFx
+signalFxEnabled: true
+
+# The access token for SignalFx.
+signalFxAccessToken: ""
+
+# Use an existing secret for the SFX token (if set does not create a secret)
+# See templates/secrets.yaml for the format of the secret to use
+signalFxAccessTokenSecretName: ""
+
+# URL to a Splunk instance to send data to.
+# If empty no data will be sent to Splunk.
+splunkUrl: ""
+
+# Splunk HTTP Event Collector token
+splunkToken: ""
+
+# Use an existing secret for the Splunk token (if set does not create a secret)
+# See templates/secrets.yaml for the format of the secret to use
+splunkTokenSecretName: ""
+
+# Splunk source: https://docs.splunk.com/Splexicon:Source
+splunkSource: ""
+
+# Splunk source type: https://docs.splunk.com/Splexicon:Sourcetype
+splunkSourceType: ""
+
+# Splunk index, optional name of the Splunk index to store the event in
+splunkIndex: ""
+
+# Skip verifying the certificate of the HTTP Event Collector
+splunkSkipTLSVerify: false
+
+# An additional set of global dimension to set on all datapoints coming out of
+# the agent.  The `kubernetes_cluster` dimension will always be set as a global
+# dimension based on the `clusterName` value.
+globalDimensions:
+
+# Docker image configuration
+image:
+  # Image pull policy for the agent pod
+  pullPolicy: IfNotPresent
+  # The docker image to use for the agent
+  repository: quay.io/signalfx/signalfx-agent
+  # tag defaults to the agentVersion but can be overridden
+  tag:
+  # pullSecret is not needed for our standard image
+  pullSecret:
+
+# How many agent pods can be unavailable at a time when rolling out a new
+# version of the agent
+rollingUpdateMaxUnavailable: 1
+
+# Number of seconds the pod must be running before transitioning to ready state.
+minReadySeconds:
+
+# Namespace to deploy agent in (Optional: Will default to release namespace)
+namespace:
+
+# Configure resource requests and limits.
+# https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+resources: {}
+  # limits:
+  #   cpu: 50m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 50m
+  #   memory: 128Mi
+
+# RBAC config for the agent
+rbac:
+  create: true
+  # You might need custom rules if you are pulling secrets to configure
+  # monitors.
+  customRules: []
+
+# Service account config for the agent pods
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+# This adds some tolerations to the pods that the DaemonSet creates that
+# should allow the agent to run on the master nodes of newer versions of K8s
+# that are deployed with standard master taints (see daemonset.yaml).  If you
+# need custom tolerations, see the 'tolerations' config option below.
+runOnMaster: true
+
+# You can specify a node selector (https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector)
+# that limits what nodes the agent will run on.
+nodeSelector: {
+  # label1: value
+  # label2: value
+}
+
+# You can specify additional tolerations for the pods that the DaemonSet
+# creates.
+tolerations: []
+
+## Annotations for signalfx-agent pods
+podAnnotations: {}
+
+# Extra labels to put on agent pods.  Values must be strings per the k8s label
+# schema.
+extraPodLabels: {}
+
+# You can specify a custom agent config file with the agentConfig value.  If
+# you specify this, all of the options below here will no longer be applicable
+# since they are used to render a default config (see configmap.yaml template).
+agentConfig:
+
+# The SignalFx realm to configure the agent to send metrics to.  If set, the
+# values of `ingestUrl`, `traceEndpointUrl` and `apiUrl` will be automatically
+# set based on this realm value.  If unset, it defaults to the original us0
+# realm in the agent.
+signalFxRealm:
+
+# The URL of SignalFx ingest server. Should be overridden if using the SignalFx
+# Gateway. If you want to send trace spans to a different location, set the
+# traceEndpointUrl option. (default: "https://ingest.signalfx.com")
+ingestUrl:
+
+# The full URL (including path) to the trace ingest server. If this is not set,
+# all trace spans will be sent to the ingestUrl configured above.
+traceEndpointUrl:
+
+# The SignalFx API base URL. (default: "https://api.signalfx.com")
+apiUrl:
+
+# An arbitrary value that identifies this K8s cluster in SignalFx.  This value
+# must match the configured cluster name in the SignalFx Smart Gateway if it is
+# being used. This will be the value of the 'kubernetes_cluster' dimension on
+# every metric sent by the agent (unless overriden by `kubernetesClusterName`).
+# It will also be the value of the `cluster` config option that is used to set a
+# `cluster` property on the `host` dimension. (REQUIRED)
+clusterName:
+
+# Kubernetes cluster name that is sent as the `kubernetes_cluster` dimension on all metrics.
+# Defaults to `clusterName` value if not set. Setting this value does not change `clusterName`.
+kubernetesClusterName:
+
+# How frequently to send metrics by default in the agent.  This can be
+# overridden by individual monitors.
+metricIntervalSeconds: 10
+
+# The log level of the agent.  Valid values are 'debug', 'info', 'warn', and
+# 'error'.  Info is a good default and won't be too spamy.  Note that 'debug'
+# may dump sensitive values in the provided configuration so use with care.
+logLevel: info
+
+# The log format of the agent.  Valid values are 'text' and 'json'
+# The agent will emit logs in either an unstructed text (default) or JSON format.
+logFormat: text
+
+# Whether to ignore TLS validation issue when connecting to the main K8s API
+# server.  This should almost never need to be set to true since the CA cert is
+# provided with the service account token automatically by K8s. Has no effect
+# if `configureStandardMonitors: false`.
+apiServerSkipVerify: false
+
+# Additional options for connecting to the Kubelet.  These options are
+# equivalent to what is under the 'kubeletAPI' key of the 'kubelet-stats'
+# monitor.  By default, the agent tries to use its service account if kubelet
+# authentication is required.  Has no effect if `configureStandardMonitors: false`.
+kubeletAPI:
+  authType: serviceAccount
+  # Replace the above with the following if using GKE/PKE or any
+  # environment where RBAC is not effective for the kubelet's /stats
+  # endpoint
+  # authType: none
+  # url: http://localhost:10255
+
+# Any values put in this object correspond to the 'collectd' config block of
+# the agent config
+collectd: {}
+
+# How often to send cAdvisor-based container metrics.  Defaults to whatever is
+# in metricIntervalSeconds. Has no effect if `configureStandardMonitors: false`.
+containerStatsIntervalSeconds:
+
+# Kubernetes distribution. Can be one either `kubernetes` or `openshift`. Defaults to
+# `kubernetes`. Has no effect if `configureStandardMonitors: false`.
+kubernetesDistro: kubernetes
+
+# If true, K8s cluster-level metrics will be collected (e.g. pod counts,
+# deployment status, etc).  The agents will decide amongst themselves which
+# instance should send the metrics so that they are only sent once.  Has no
+# effect if `configureStandardMonitors: false`.
+gatherClusterMetrics: true
+
+# Enables the docker-container-stats monitor with some specific config that
+# causes it to send container stats from Docker with certain dimensions from
+# container labels that makes it easy to correlate metrics between cadvisor and
+# docker. Note that docker metrics are not sent for pause containers by
+# default.  Has no effect if `configureStandardMonitors: false`.
+gatherDockerMetrics: true
+
+# A list of metric names that are collected by monitors but are not to be sent
+# to SignalFx.  This default set include a lot of highly specific or duplicated
+# cAdvisor metrics that cause a large increase in DPM for little value for most
+# customers.
+metricsToExclude:
+
+
+# The path to the 'etc' directory of the underlying K8s node.  This allows the
+# agent to pull certain metadata about the node, such as the Linux distro
+# version.
+etcPath: /hostfs/etc
+
+# The path to the /proc filesystem of the underlying node.  This allows the
+# agent to pull information about processes running on the node, as well as
+# other system information.
+procPath: /hostfs/proc
+
+# The path to the host filesystem, mounted in the agent container.  This is
+# necessary to get filesystem usage information.
+hostFSPath: /hostfs
+
+# If true, a standard set of host infrastructure and Kubernetes cluster
+# monitors will be configured.
+configureStandardMonitors: true
+
+# A list of monitor configurations to include in the agent config.  These
+# values correspond exactly to what goes under 'monitors' in the agent config.
+monitors:

@@ -43,6 +43,10 @@ Wait for splunk-splunk-kube to start up and go to running.
 ```
 kubectl get pods -w
 ```
+Install the SignalFx agent:
+```
+./start-signalfx.sh
+```
 
 Now, we are ready to launch the network:
 ```

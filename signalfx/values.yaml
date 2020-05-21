@@ -1,0 +1,86 @@
+# A Kubernetes Helm values file that you can use when deploying the agent in a
+# development K8s cluster with a Splunk cluster. You should change the imageTag
+# to whatever tag you are using for development.
+
+# Disable sending to SignalFx
+signalFxEnabled: false
+
+splunkUrl: https://splunk-splunk-kube:8088/services/collector
+splunkToken: 12345678-ABCD-EFGH-IJKL-123456789012
+splunkSource: sfx
+splunkIndex: sfx
+splunkSkipTlsVerify: true
+
+clusterName: dev-cluster
+
+image:
+  repository: tmio/signalfx-agent-demo
+  tag: 5.1.3-k8s
+  pullPolicy: Always
+fullnameOverride: agent
+
+
+kubeletAPI:
+  skipVerify: true
+
+monitors:
+  - type: docker-container-stats
+    enableExtraCPUMetrics: true
+  - type: prometheus-exporter
+    host: orderer.example.com
+    port: 8443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: orderer
+  - type: prometheus-exporter
+    host: orderer2.example.com
+    port: 8443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: orderer
+  - type: prometheus-exporter
+    host: orderer3.example.com
+    port: 8443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: orderer
+  - type: prometheus-exporter
+    host: orderer4.example.com
+    port: 8443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: orderer
+  - type: prometheus-exporter
+    host: orderer5.example.com
+    port: 8443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: orderer
+  - type: prometheus-exporter
+    host: peer0.popstar.example.com
+    port: 9443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: peer
+  - type: prometheus-exporter
+    host: peer1.popstar.example.com
+    port: 9443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: peer
+  - type: prometheus-exporter
+    host: peer0.buttercup.example.com
+    port: 9443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: peer
+  - type: prometheus-exporter
+    host: peer1.buttercup.example.com
+    port: 9443
+    extraDimensions:
+      metric_source: prometheus
+      host_type: peer
+  - type: trace-forwarder
+    listenAddress: 0.0.0.0:9080
+    extraSpanTags:
+      environment: hyperledger-demo
