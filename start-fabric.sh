@@ -1,6 +1,6 @@
 #!/bin/bash
 set +ex
-curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 1.4.3
+curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 1.4.1
 export PATH=$PATH:$PWD/fabric-samples/bin
 
 cd fabric-kube
