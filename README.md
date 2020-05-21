@@ -73,6 +73,11 @@ kubectl get services splunk-splunk-kube
 ```
 Navigate to http://{{splunk ip}}:8080/en-US/app/splunk-hyperledger-fabric/introduction
 
+If you are using Minikube, you can expose the service with:
+```
+minikube service splunk-splunk-kube
+```
+
 Login with user admin password changeme
 
 
