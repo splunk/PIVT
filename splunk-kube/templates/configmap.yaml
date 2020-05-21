@@ -48,6 +48,10 @@ data:
               disabled: 0
               index: hyperledger_logs
               token: 12345678-ABCD-EFGH-IJKL-123456789012
+            http://signalfx-agent:
+              disabled: 0
+              index: sfx
+              token: 12345678-ABCD-EFGH-IJKL-123456789012
         indexes:
           directory: /opt/splunk/etc/apps/search/local
           content:
@@ -64,3 +68,8 @@ data:
               coldPath: $SPLUNK_DB/cluster_objects/colddb
               homePath: $SPLUNK_DB/cluster_objects/db
               thawedPath: $SPLUNK_DB/cluster_objects/thaweddb
+            sfx:
+              datatype: metric
+              coldPath: $SPLUNK_DB/sfx/colddb
+              homePath: $SPLUNK_DB/sfx/db
+              thawedPath: $SPLUNK_DB/sfx/thaweddb
