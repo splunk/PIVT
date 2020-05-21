@@ -15,7 +15,7 @@ spec:
       protocol: TCP
       name: http
     - port: {{ .Values.service.hecport }}
-      tagetPort: {{ .Values.service.hecport }}
+      targetPort: {{ .Values.service.hecport }}
       protocol: TCP
       name: hec
     - port: {{ .Values.service.statsdport }}

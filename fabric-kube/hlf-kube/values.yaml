@@ -72,13 +72,13 @@ peer:
     # restore peers data from backup during restore procedure?
     enabled: true
   operations:
-    enabled: false
+    enabled: true
     listenAddress: 0.0.0.0:9443
     servicePort: 9443
     tls:
       enabled: false
   metrics:
-    enabled: false
+    enabled: true
     provider: prometheus
     
 # CouchDB settings. applies to all CouchDB's
@@ -137,13 +137,13 @@ orderer:
     # restore orderers data from backup during restore procedure?
     enabled: true
   operations:
-    enabled: false
+    enabled: true
     listenAddress: 0.0.0.0:8443
     servicePort: 8443
     tls: 
       enabled: false
   metrics:
-    enabled: false
+    enabled: true
     provider: prometheus    
 
 # CA (Certificate Authority) settings. applies to all CA's
@@ -199,18 +199,11 @@ metrics:
     # enable core metrics (peer)
     enabled: true
     # provider can also be set to prometheus
-    provider: statsd
-    statsd:
-      network: tcp  # tcp or udp
-      address: splunk-splunk-kube:8125
-      writeInterval: 10s
+    provider: prometheus
+
 
   orderer:
     # enable orderer metrics
     enabled: true
     # provider can also be set to prometheus
-    provider: statsd
-    statsd:
-      network: tcp  # tcp or udp
-      address: splunk-splunk-kube:8125
-      writeInterval: 10s
+    provider: prometheus

@@ -20,8 +20,11 @@ This repository contains a couple of Helm charts to:
 ## [Requirements](#requirements)
 * A running Kubernetes cluster, Microk8s should also work
 * [HL Fabric binaries](https://hyperledger-fabric.readthedocs.io/en/release-1.4/install.html)
-* [Helm](https://github.com/helm/helm/releases/tag/v2.11.0), developed with 2.11, newer 2.xx versions should also work
-* [jq](https://stedolan.github.io/jq/download/) 1.5+ and [yq](https://pypi.org/project/yq/) 2.6+
+* [Helm](https://github.com/helm/helm/releases/tag/v3.2.1), developed with 3.2.1, newer 3.xx versions should also work
+* [jq](https://stedolan.github.io/jq/download/) 1.5+
+> `brew install jq`
+* [yq](https://pypi.org/project/yq/) 2.6+
+> `brew install python-yq`
 
 ## [Network Architecture](#network-architecture)
 
@@ -50,7 +53,7 @@ and launches the network.
 
 There will be 6 channels created and "splunk_cc" chaincode instantiated.
 
-Congrulations you have a running HL Fabric network in Kubernetes!
+Congratulations you have a running HL Fabric network in Kubernetes!
 
 
 ## [Generate Transactions](#generate-transactions)
