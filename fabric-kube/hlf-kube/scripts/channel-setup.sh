@@ -157,9 +157,10 @@ instantiateChaincode "peer0.popstar.example.com" "rage-trilogy" "splunk_cc" "Pop
 instantiateChaincode "peer0.popstar.example.com" "chaos-oath" "splunk_cc" "PopstarMSP" 1.0
 
 # These set up channel logging to Splunk
-curl fabric-logger-peer0:8080/channels/buttercup-go
-curl fabric-logger-peer0:8080/channels/haunt
-curl fabric-logger-peer0:8080/channels/crisis-uprising
-curl fabric-logger-peer0:8080/channels/containment-apocalyse
-curl fabric-logger-peer0:8080/channels/rage-trilogy
-curl fabric-logger-peer0:8080/channels/chaos-oath
+curl -X PUT fabric-logger-peer0:8080/channels/buttercup-go
+curl -X PUT fabric-logger-peer0:8080/channels/haunt
+curl -X PUT fabric-logger-peer0:8080/channels/crisis-uprising
+curl -X PUT fabric-logger-peer0:8080/channels/containment-apocalyse
+curl -X PUT fabric-logger-peer0:8080/channels/rage-trilogy
+curl -X PUT fabric-logger-peer0:8080/channels/chaos-oath
+curl -X PUT -H "Content-Type: application/json" -d '{"filter":"updateEvent"}' fabric-logger-peer0:8080/channels/buttercup-go/events/splunk_cc
