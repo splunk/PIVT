@@ -33,6 +33,11 @@ data:
     traceEndpointUrl: {{ .Values.traceEndpointUrl }}
     {{- end }}
 
+    {{- else }}
+    signalFxAccessToken: ""
+    ingestUrl: ""
+    signalFxRealm: ""
+    apiUrl: ""
     {{- end }}
 
     etcPath: {{ .Values.etcPath }}

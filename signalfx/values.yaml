@@ -27,55 +27,65 @@ monitors:
   - type: docker-container-stats
     enableExtraCPUMetrics: true
   - type: prometheus-exporter
-    host: orderer.example.com
+    discoveryRule: port == 8443 && container_image =~ "orderer"
+    extraDimensions:
+      metric_source: prometheus
+      host_type: orderer
+  - type: prometheus-exporter
+    discoveryRule: port == 9443 && container_image =~ "peer"
+    extraDimensions:
+      metric_source: prometheus
+      host_type: peer
+  - type: prometheus-exporter
+    host: hlf-orderer--orderer--orderer
     port: 8443
     extraDimensions:
       metric_source: prometheus
       host_type: orderer
   - type: prometheus-exporter
-    host: orderer2.example.com
+    host: hlf-orderer--orderer--orderer2
     port: 8443
     extraDimensions:
       metric_source: prometheus
       host_type: orderer
   - type: prometheus-exporter
-    host: orderer3.example.com
+    host: hlf-orderer--orderer--orderer3
     port: 8443
     extraDimensions:
       metric_source: prometheus
       host_type: orderer
   - type: prometheus-exporter
-    host: orderer4.example.com
+    host: hlf-orderer--orderer--orderer4
     port: 8443
     extraDimensions:
       metric_source: prometheus
       host_type: orderer
   - type: prometheus-exporter
-    host: orderer5.example.com
+    host: hlf-orderer--orderer--orderer5
     port: 8443
     extraDimensions:
       metric_source: prometheus
       host_type: orderer
   - type: prometheus-exporter
-    host: peer0.popstar.example.com
+    host: hlf-peer--popstar--peer0
     port: 9443
     extraDimensions:
       metric_source: prometheus
       host_type: peer
   - type: prometheus-exporter
-    host: peer1.popstar.example.com
+    host: hlf-peer--popstar--peer1
     port: 9443
     extraDimensions:
       metric_source: prometheus
       host_type: peer
   - type: prometheus-exporter
-    host: peer0.buttercup.example.com
+    host: hlf-peer--buttercup--peer0
     port: 9443
     extraDimensions:
       metric_source: prometheus
       host_type: peer
   - type: prometheus-exporter
-    host: peer1.buttercup.example.com
+    host: hlf-peer--buttercup--peer1
     port: 9443
     extraDimensions:
       metric_source: prometheus
@@ -84,3 +94,10 @@ monitors:
     listenAddress: 0.0.0.0:9080
     extraSpanTags:
       environment: hyperledger-demo
+  - type: prometheus-exporter
+    host: ipfs-ipfs.default
+    port: 5001
+    metricPath: /debug/metrics/prometheus
+    extraDimensions:
+      metric_source: prometheus
+      host_type: ipfs
