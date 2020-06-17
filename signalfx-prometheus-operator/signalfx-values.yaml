@@ -1,0 +1,36 @@
+# A Kubernetes Helm values file that you can use when deploying the agent in a
+# development K8s cluster with a Splunk cluster. You should change the imageTag
+# to whatever tag you are using for development.
+
+# Disable sending to SignalFx
+signalFxEnabled: false
+
+splunkUrl: https://splunk-splunk-kube:8088/services/collector
+splunkToken: 12345678-ABCD-EFGH-IJKL-123456789012
+splunkSource: sfx
+splunkIndex: sfx
+splunkSkipTLSVerify: true
+
+clusterName: dev-cluster
+
+image:
+  tag: 5.3.1
+  pullPolicy: Always
+fullnameOverride: agent
+
+kubeletAPI:
+  skipVerify: true
+
+monitors:
+  - type: kube-controller-manager
+    discoveryRule: kubernetes_pod_name =~ "kube-controller-manager" && target == "pod"
+    port: 10252
+    extraDimensions:
+      metric_source: kube-controller-manager
+  - type: prometheus-exporter
+    discoveryRule: kubernetes_pod_name =~ "prometheus-prometheus" && target == "pod"
+    host: prometheus
+    port: 9090
+    metricPath: '/federate?match[]=%7Bendpoint%3D%22operations%22%7D'
+    extraDimensions:
+      metric_source: prometheus

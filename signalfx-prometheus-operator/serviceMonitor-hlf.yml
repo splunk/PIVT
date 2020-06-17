@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fabric-monitor-hlf
+  namespace: default
+  labels:
+    app: prometheus-fabric-monitor-hlf
+    release: prometheus-operator
+spec:
+  selector:
+    matchExpressions:
+      - {key: component, operator: In, values: [hlf-peer,hlf-orderer]}
+  namespaceSelector:
+    matchNames:
+    - default
+  endpoints:
+    - port: operations
+      interval: 15s
+      honorLabels: true
