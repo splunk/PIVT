@@ -2,8 +2,7 @@
 # Install prometheus-operator
 helm upgrade --install prometheus-operator --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false stable/prometheus-operator
 
-kubectl apply -f signalfx-prometheus-operator/serviceMonitor-orderers.yml
-kubectl apply -f signalfx-prometheus-operator/serviceMonitor-peers.yml
+kubectl apply -f signalfx-prometheus-operator/serviceMonitor-hlf.yml
 
 helm repo add signalfx https://dl.signalfx.com/helm-repo
 helm repo update
