@@ -43,20 +43,10 @@ Wait for splunk-splunk-kube to start up and go to running.
 ```
 kubectl get pods -w
 ```
-IMPORTANT: Choose if you want to listen directly to pods or use the prometheus-operator pod:
-
-Either:
 
 Install the SignalFx agent:
 ```
 ./start-signalfx.sh
-```
-
-Or:
-
-Install the prometheus-operator pod and the associated SignalFx agent, pointed at it:
-```
-./start-prometheus-operator-signalfx.sh
 ```
 
 Now, we are ready to launch the network:
