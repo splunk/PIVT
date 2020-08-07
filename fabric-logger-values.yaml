@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: splunkdlt/fabric-logger
-  tag: release-2.0.0
+  tag: release-2.0.2
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -59,6 +59,7 @@ channels:
   - rage-trilogy
   - containment-apocalyse
 
+
 ccevents:
   # A list of chaincode events to listen for:
   - channelName: buttercup-go
@@ -70,6 +71,7 @@ splunk:
   hec:
     token: 12345678-ABCD-EFGH-IJKL-123456789012
     url: https://splunk-splunk-kube:8088
+    rejectInvalidCerts: "false"
   index: hyperledger_logs
 
 ingress:
