@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: splunkdlt/fabric-logger
-  tag: release-1.2.1
+  tag: release-2.0.2
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -50,11 +50,28 @@ peer:
     - rage-trilogy
     - containment-apocalyse
 
+channels:
+  # A list of channel names that this peer connects to:
+  - buttercup-go
+  - haunt
+  - crisis-uprising
+  - chaos-oath
+  - rage-trilogy
+  - containment-apocalyse
+
+
+ccevents:
+  # A list of chaincode events to listen for:
+  - channelName: buttercup-go
+    filter: updateEvent
+    chaincodeId: splunk_cc
+
 loggingLocation: splunk
 splunk:
   hec:
     token: 12345678-ABCD-EFGH-IJKL-123456789012
     url: https://splunk-splunk-kube:8088
+    rejectInvalidCerts: "false"
   index: hyperledger_logs
 
 ingress:
