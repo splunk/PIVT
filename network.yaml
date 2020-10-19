@@ -1,0 +1,79 @@
+# https://fabric-sdk-node.github.io/release-1.4/tutorial-network-config.html
+name: "Network"
+version: "1.0"
+
+client:
+  # Which organization does this application instance belong to? The value is the name of an org
+  # defined under "organizations"
+  organization: buttercup
+
+channels:
+  buttercup-go:
+    orderers:
+      - orderer.example.com
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+  haunt:
+    orderers:
+      - orderer.example.com
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+  crisis-uprising:
+    orderers:
+      - orderer.example.com
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+  containment-apocalyse:
+    orderers:
+      - orderer.example.com
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+  rage-trilogy:
+    orderers:
+      - orderer.example.com
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+  chaos-oath:
+    orderers:
+      - orderer.example.com
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+
+organizations:
+  buttercup:
+    mspid: ButtercupMSP
+    peers:
+      - peer0.buttercup.example.com
+      - peer1.buttercup.example.com
+
+orderers:
+  orderer.example.com:
+    url: grpcs://orderer.example.com:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.example.com
+      grpc-max-send-message-length: 4194304
+    tlsCACerts:
+      path: crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+peers:
+  peer0.buttercup.example.com:
+    url: grpcs://peer0.buttercup.example.com:7051
+    grpcOptions:
+      ssl-target-name-override: peer0.buttercup.example.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: crypto/peerOrganizations/buttercup.example.com/peers/peer0.buttercup.example.com/msp/tlscacerts/tlsca.buttercup.example.com-cert.pem
+
+  peer1.buttercup.example.com:
+    url: grpcs://peer1.buttercup.example.com:7051
+    grpcOptions:
+      ssl-target-name-override: peer1.buttercup.example.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: crypto/peerOrganizations/buttercup.example.com/peers/peer1.buttercup.example.com/msp/tlscacerts/tlsca.buttercup.example.com-cert.pem      

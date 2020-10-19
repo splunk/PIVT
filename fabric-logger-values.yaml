@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: splunkdlt/fabric-logger
-  tag: release-2.0.2
+  tag: release-3.0.1
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -16,55 +16,29 @@ service:
   type: ClusterIP
   port: 8080
 
-secrets:
-  peer:
-    # If create: is set to true, then secrets will be auto created based on a cryptogen MSP directory structure.
-    create: false
-    # Secrets can be specified here to overwrite the secret creation setting above.
-    cert: hlf-peer--buttercup--admin-msp
-    #itemKey can be defined if there is a secret with multiple items stored inside.
-    certItem: cert.pem
-    key: hlf-peer--buttercup--admin-msp
-    keyItem: key.pem
-    tls: hlf-peer--buttercup--admin-msp
-    tlsItem: tlscacert.pem
-    clientCert: hlf-peer--buttercup--peer0-tls
-    clientCertItem: server.crt
-    clientKey: hlf-peer--buttercup--peer0-tls
-    clientKeyItem: server.key
-
-peer:
-  mspName: ButtercupMSP
-  peerName: peer0
-  username: Admin   # If secrets.peer.create = true, this is the user that will be used in the crytpogen directory.
-  orgDomain: example.com
-  peerScheme: grpcs  # grpc or grpcs
-  peerAddress: peer0.buttercup.example.com
-  peerPort: 7051
+fabric:
+  msp: ButtercupMSP
+  orgDomain: buttercup.example.com
+  blockType: full
+  user: Admin
   channels:
-    # A list of channel names that this peer connects to:
     - buttercup-go
     - haunt
     - crisis-uprising
-    - chaos-oath
-    - rage-trilogy
     - containment-apocalyse
+    - rage-trilogy
+    - chaos-oath
+  ccevents:
+    # A list of chaincode events to listen for:
+    - channelName: buttercup-go
+      chaincodeId: splunk_cc
 
-channels:
-  # A list of channel names that this peer connects to:
-  - buttercup-go
-  - haunt
-  - crisis-uprising
-  - chaos-oath
-  - rage-trilogy
-  - containment-apocalyse
+secrets:
+  peer:
+    # If create: is set to true, then secrets will be auto created based on a cryptogen MSP directory structure.
+    create: true
+    # Secrets can be specified here to overwrite the secret creation setting above.
 
-
-ccevents:
-  # A list of chaincode events to listen for:
-  - channelName: buttercup-go
-    filter: updateEvent
-    chaincodeId: splunk_cc
 
 loggingLocation: splunk
 splunk:
