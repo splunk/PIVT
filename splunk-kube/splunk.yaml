@@ -9,7 +9,7 @@ splunk:
 
 image:
   repository: splunk/splunk
-  tag: latest
+  tag: 8.0.1
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -41,7 +41,7 @@ global:
   logLevel: info 
   splunk:
     password: changeme
-    apps: 
+    apps:
       - http://s3.amazonaws.com/splunk-hyperledger/fabric/master/splunk-hyperledger-fabric.tgz
     hec:
       protocol: https

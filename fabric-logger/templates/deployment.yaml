@@ -23,6 +23,8 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["fabriclogger"]
+          args: ["-c", "network/fabriclogger.yaml"]
           volumeMounts:
             - name: network
               mountPath: /usr/src/app/network
@@ -46,18 +48,6 @@ spec:
             - mountPath: "/var/hyperledger/tls/keystore"
               name: id-clientkey
             {{- end }}
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -82,7 +72,7 @@ spec:
           - name: SPLUNK_HEC_TOKEN
             value: {{ .Values.splunk.hec.token | quote }}
           - name: SPLUNK_HEC_URL
-            value: {{ .Values.splunk.hec.url | quote}}
+            value: {{ .Values.splunk.hec.url | quote }}
           - name: SPLUNK_HOST
             value: {{ .Values.splunk.hec.host | quote }}
           - name: SPLUNK_PORT
@@ -93,6 +83,8 @@ spec:
             value: {{ .Values.loggingLocation | quote }}
           - name: NETWORK_CONFIG
             value: network/network.yaml
+          - name: SPLUNK_HEC_REJECT_INVALID_CERTS
+            value: {{ .Values.splunk.hec.rejectInvalidCerts | quote }}
       volumes:
       - name: network 
         configMap:
